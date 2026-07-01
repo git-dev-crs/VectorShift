@@ -1,13 +1,74 @@
-body {
+/* index.css — Global reset & design foundation
+   All component-level styles live in their own files or inline.
+   This file sets the absolute base: reset, fonts, scrollbars,
+   and ReactFlow global overrides. */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #0f1117;
+  color: #f1f5f9;
+}
+
+/* Thin, subtle scrollbars throughout */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* ReactFlow handle hover animation */
+.react-flow__handle {
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.react-flow__handle:hover {
+  transform: scale(1.35);
+}
+
+/* Selected node ring */
+.react-flow__node.selected > div {
+  box-shadow: 0 0 0 2px #6366f1, 0 4px 16px rgba(99,102,241,0.25) !important;
+}
+
+/* ReactFlow attribution hide */
+.react-flow__attribution { display: none !important; }
+
+/* Styled ReactFlow Controls panel */
+.react-flow__controls {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+}
+.react-flow__controls-button {
+  background: #1e293b !important;
+  border-bottom: 1px solid #334155 !important;
+  color: #94a3b8 !important;
+  fill: #94a3b8 !important;
+}
+.react-flow__controls-button:hover {
+  background: #334155 !important;
+  color: #f1f5f9 !important;
+  fill: #f1f5f9 !important;
+}
+
+/* Spin animation for loading button */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
