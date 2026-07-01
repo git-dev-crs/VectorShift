@@ -1,35 +1,50 @@
 // ui.js
-// Displays the drag-and-drop UI
-// --------------------------------------------------
+// Updated to register all 9 node types in the ReactFlow nodeTypes map
 
 import { useState, useRef, useCallback } from 'react';
 import ReactFlow, { Controls, Background, MiniMap } from 'reactflow';
 import { useStore } from './store';
 import { shallow } from 'zustand/shallow';
-import { InputNode } from './nodes/inputNode';
-import { LLMNode } from './nodes/llmNode';
+
+// Original 4 nodes
+import { InputNode }  from './nodes/inputNode';
+import { LLMNode }    from './nodes/llmNode';
 import { OutputNode } from './nodes/outputNode';
-import { TextNode } from './nodes/textNode';
+import { TextNode }   from './nodes/textNode';
+
+// 5 new nodes (Part 1 — demonstrating abstraction)
+import { MathNode }           from './nodes/mathNode';
+import { FilterNode }         from './nodes/filterNode';
+import { ApiRequestNode }     from './nodes/apiRequestNode';
+import { PromptTemplateNode } from './nodes/promptTemplateNode';
+import { NoteNode }           from './nodes/noteNode';
 
 import 'reactflow/dist/style.css';
 
 const gridSize = 20;
 const proOptions = { hideAttribution: true };
+
+// All 9 node types registered — adding a new node only requires one line here
 const nodeTypes = {
-  customInput: InputNode,
-  llm: LLMNode,
-  customOutput: OutputNode,
-  text: TextNode,
+  customInput:    InputNode,
+  llm:            LLMNode,
+  customOutput:   OutputNode,
+  text:           TextNode,
+  math:           MathNode,
+  filter:         FilterNode,
+  apiRequest:     ApiRequestNode,
+  promptTemplate: PromptTemplateNode,
+  note:           NoteNode,
 };
 
 const selector = (state) => ({
-  nodes: state.nodes,
-  edges: state.edges,
-  getNodeID: state.getNodeID,
-  addNode: state.addNode,
+  nodes:         state.nodes,
+  edges:         state.edges,
+  getNodeID:     state.getNodeID,
+  addNode:       state.addNode,
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
-  onConnect: state.onConnect,
+  onConnect:     state.onConnect,
 });
 
 export const PipelineUI = () => {
@@ -59,7 +74,6 @@ export const PipelineUI = () => {
             const appData = JSON.parse(event.dataTransfer.getData('application/reactflow'));
             const type = appData?.nodeType;
       
-            // check if the dropped element is valid
             if (typeof type === 'undefined' || !type) {
               return;
             }

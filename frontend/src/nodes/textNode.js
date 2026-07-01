@@ -1,35 +1,22 @@
-// textNode.js
+// textNode.js — Refactored using BaseNode abstraction
 
-import { useState } from 'react';
-import { Handle, Position } from 'reactflow';
+import { BaseNode, ACCENTS } from './BaseNode';
 
-export const TextNode = ({ id, data }) => {
-  const [currText, setCurrText] = useState(data?.text || '{{input}}');
-
-  const handleTextChange = (e) => {
-    setCurrText(e.target.value);
-  };
-
-  return (
-    <div style={{width: 200, height: 80, border: '1px solid black'}}>
-      <div>
-        <span>Text</span>
-      </div>
-      <div>
-        <label>
-          Text:
-          <input 
-            type="text" 
-            value={currText} 
-            onChange={handleTextChange} 
-          />
-        </label>
-      </div>
-      <Handle
-        type="source"
-        position={Position.Right}
-        id={`${id}-output`}
-      />
-    </div>
-  );
-}
+export const TextNode = ({ id, data }) => (
+  <BaseNode id={id} data={data} config={{
+    title:  'Text',
+    accent: ACCENTS.transform,
+    icon:   'T',
+    fields: [
+      {
+        name:        'text',
+        label:       'Content',
+        type:        'textarea',
+        placeholder: 'Enter text or use {{variable}} syntax…',
+      },
+    ],
+    handles: [
+      { type: 'source', position: 'right', idSuffix: 'output' },
+    ],
+  }} />
+);

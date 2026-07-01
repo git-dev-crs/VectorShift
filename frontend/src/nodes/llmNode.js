@@ -1,34 +1,22 @@
-// llmNode.js
+// llmNode.js — Refactored using BaseNode abstraction
 
-import { Handle, Position } from 'reactflow';
+import { BaseNode, ACCENTS } from './BaseNode';
 
-export const LLMNode = ({ id, data }) => {
-
-  return (
-    <div style={{width: 200, height: 80, border: '1px solid black'}}>
-      <Handle
-        type="target"
-        position={Position.Left}
-        id={`${id}-system`}
-        style={{top: `${100/3}%`}}
-      />
-      <Handle
-        type="target"
-        position={Position.Left}
-        id={`${id}-prompt`}
-        style={{top: `${200/3}%`}}
-      />
-      <div>
-        <span>LLM</span>
-      </div>
-      <div>
-        <span>This is a LLM.</span>
-      </div>
-      <Handle
-        type="source"
-        position={Position.Right}
-        id={`${id}-response`}
-      />
-    </div>
-  );
-}
+export const LLMNode = ({ id, data }) => (
+  <BaseNode id={id} data={data} config={{
+    title:  'LLM',
+    accent: ACCENTS.ai,
+    icon:   '✦',
+    fields: [
+      {
+        type: 'static',
+        text: 'Connects a system prompt and user prompt to a language model.',
+      },
+    ],
+    handles: [
+      { type: 'target', position: 'left', idSuffix: 'system',  style: { top: '33%' } },
+      { type: 'target', position: 'left', idSuffix: 'prompt',  style: { top: '67%' } },
+      { type: 'source', position: 'right', idSuffix: 'response' },
+    ],
+  }} />
+);
