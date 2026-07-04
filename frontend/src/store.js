@@ -37,17 +37,31 @@ export const useStore = create((set, get) => ({
     },
     onConnect: (connection) => {
       set({
-        edges: addEdge({...connection, type: 'smoothstep', animated: true, markerEnd: {type: MarkerType.Arrow, height: '20px', width: '20px'}}, get().edges),
+        edges: addEdge({
+          ...connection,
+          type: 'smoothstep',
+          animated: true,
+          // Bug 3 fix: set stroke color so edges match the app's indigo theme.
+          // Without style.stroke ReactFlow renders edges in its default gray.
+          style: { stroke: '#6366f1', strokeWidth: 2 },
+          markerEnd: {
+            type:   MarkerType.Arrow,
+            height: '20px',
+            width:  '20px',
+            color:  '#6366f1',  // arrowhead color must be set separately
+          },
+        }, get().edges),
       });
     },
     updateNodeField: (nodeId, fieldName, fieldValue) => {
       set({
         nodes: get().nodes.map((node) => {
-          if (node.id === nodeId) {
-            node.data = { ...node.data, [fieldName]: fieldValue };
-          }
-  
-          return node;
+          if (node.id !== nodeId) return node;
+          // Bug 1 fix: return a brand-new object instead of mutating node.data
+          // in-place. React and Zustand use reference equality to detect changes;
+          // mutating the existing object keeps the reference the same, causing
+          // silent re-render failures when field values change.
+          return { ...node, data: { ...node.data, [fieldName]: fieldValue } };
         }),
       });
     },
