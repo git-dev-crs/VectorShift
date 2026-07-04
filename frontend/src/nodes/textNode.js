@@ -21,7 +21,7 @@
 //     handle i of N sits at  ((i+1)/(N+1))*100%  from the top.
 //     A small label tag beside each handle shows the variable name.
 
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useMemo } from 'react';
 import { Handle, Position } from 'reactflow';
 import { useStore } from '../store';
 import { shallow } from 'zustand/shallow';
@@ -51,17 +51,20 @@ function extractVariables(text) {
   return Array.from(seen).sort();
 }
 
-// ─── Zustand selector ─────────────────────────────────────────────────────────
-
-const makeSelector = (id) => (state) => ({
-  updateNodeField: state.updateNodeField,
-  data: state.nodes.find((n) => n.id === id)?.data,
-});
-
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export const TextNode = ({ id, data: dataProp }) => {
-  const { updateNodeField, data: storeData } = useStore(makeSelector(id), shallow);
+  // Bug 2 fix: useMemo stabilises the selector reference so shallow equality
+  // works correctly. Calling makeSelector(id) inline creates a new function on
+  // every render, defeating shallow and causing unnecessary store re-runs.
+  const selector = useMemo(
+    () => (state) => ({
+      updateNodeField: state.updateNodeField,
+      data: state.nodes.find((n) => n.id === id)?.data,
+    }),
+    [id]
+  );
+  const { updateNodeField, data: storeData } = useStore(selector, shallow);
   const data = storeData ?? dataProp ?? {};
   const text = data.text ?? '{{input}}';
 

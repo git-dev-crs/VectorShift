@@ -9,7 +9,7 @@
 //
 // ─── Imports ─────────────────────────────────────────────────────────────────
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Handle, Position } from 'reactflow';
 import { useStore } from '../store';
 import { shallow } from 'zustand/shallow';
@@ -91,7 +91,20 @@ const makeSelector = (nodeId) => (state) => ({
 // ─── BaseNode component ───────────────────────────────────────────────────────
 
 export const BaseNode = ({ id, data: dataProp, config }) => {
-  const { updateNodeField, data: storeData } = useStore(makeSelector(id), shallow);
+  // Bug 2 fix: useMemo stabilises the selector reference across renders.
+  // Calling makeSelector(id) inline during render creates a new function object
+  // every time, which defeats shallow equality and causes unnecessary re-renders
+  // for every node whenever any part of the store changes.
+  // With useMemo the same function reference is reused on every render (unless
+  // `id` changes, which effectively never happens for a mounted node).
+  const selector = useMemo(
+    () => (state) => ({
+      updateNodeField: state.updateNodeField,
+      data: state.nodes.find((n) => n.id === id)?.data,
+    }),
+    [id]
+  );
+  const { updateNodeField, data: storeData } = useStore(selector, shallow);
   // Prefer live Zustand data; fall back to the RF-injected prop on first render.
   const data = storeData ?? dataProp ?? {};
 
