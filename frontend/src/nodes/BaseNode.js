@@ -83,11 +83,6 @@ const positionMap = {
   bottom: Position.Bottom,
 };
 
-const makeSelector = (nodeId) => (state) => ({
-  updateNodeField: state.updateNodeField,
-  data: state.nodes.find((n) => n.id === nodeId)?.data,
-});
-
 // ─── BaseNode component ───────────────────────────────────────────────────────
 
 export const BaseNode = ({ id, data: dataProp, config }) => {
